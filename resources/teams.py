@@ -11,7 +11,7 @@ team_model = ns.model('Team', {
     'assists': fields.Integer(required=True)
 })
 
-@ns.route('/')
+@ns.route('/', strict_slashes=False)
 class TeamList(Resource):
     """
     此接口用于获取所有球队的列表

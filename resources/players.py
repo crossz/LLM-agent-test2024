@@ -12,7 +12,7 @@ player_model = ns.model('Player', {
     'assists': fields.Integer(required=True)
 })
 
-@ns.route('/')
+@ns.route('/', strict_slashes=False)
 class PlayerList(Resource):
     """
     此接口用于获取所有球员的列表

@@ -1,20 +1,25 @@
 import unittest
 from unittest.mock import MagicMock
 from sqlalchemy.orm import Session
-from app import app, db, Team, Player
+from app import create_app, db
+from models import Team, Player
 from flask_restx import inputs
 
-class TestNBAStatsAPI(unittest.TestCase):
+app = create_app()
 
+class TestNBAStatsAPI(unittest.TestCase):
     def setUp(self):
+        
         self.app_context = app.app_context()
         self.app_context.push()
         db.create_all()
 
         # 创建测试会话
         self.session = Session(db.engine)
+        # self.session.begin_nested()  # 确保在初始化self.session之后调用
 
     def tearDown(self):
+        # db.session.rollback()
         self.session.close()
         db.session.remove()
         db.drop_all()
@@ -28,7 +33,7 @@ class TestNBAStatsAPI(unittest.TestCase):
         self.session.commit()
 
         with app.test_client() as client:
-            response = client.get('/nba_stats/teams')
+            response = client.get('/teams')
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(len(data), 2)
@@ -44,7 +49,7 @@ class TestNBAStatsAPI(unittest.TestCase):
         self.session.commit()
 
         with app.test_client() as client:
-            response = client.get('/nba_stats/teams/1')
+            response = client.get('/teams/1')
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(data['name'], 'Team 3')
@@ -61,7 +66,7 @@ class TestNBAStatsAPI(unittest.TestCase):
         self.session.commit()
 
         with app.test_client() as client:
-            response = client.get('/nba_stats/players')
+            response = client.get('/players')
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(len(data), 2)
@@ -78,7 +83,7 @@ class TestNBAStatsAPI(unittest.TestCase):
         self.session.commit()
 
         with app.test_client() as client:
-            response = client.get('/nba_stats/players/1')
+            response = client.get('/players/1')
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(data['name'], 'Player 3')
@@ -94,7 +99,7 @@ class TestNBAStatsAPI(unittest.TestCase):
                 'rebounds': 35,
                 'assists': 15
             }
-            response = client.post('/nba_stats/teams', json=data)
+            response = client.post('/teams', json=data)
             self.assertEqual(response.status_code, 201)
 
             # 验证数据是否在测试会话中成功创建
@@ -118,7 +123,7 @@ class TestNBAStatsAPI(unittest.TestCase):
                 'rebounds': 38,
                 'assists': 18
             }
-            response = client.put('/nba_stats/teams/1', json=data)
+            response = client.put('/teams/1', json=data)
             self.assertEqual(response.status_code, 200)
 
             # 验证数据在测试会话中是否成功更新
@@ -135,7 +140,7 @@ class TestNBAStatsAPI(unittest.TestCase):
         self.session.commit()
 
         with app.test_client() as client:
-            response = client.delete('/nba_stats/teams/1')
+            response = client.delete('/teams/1')
             self.assertEqual(response.status_code, 200)
 
             # 验证球队在测试会话中是否已被删除
@@ -156,7 +161,7 @@ class TestNBAStatsAPI(unittest.TestCase):
                 'rebounds': 9,
                 'assists': 4
             }
-            response = client.post('/nba_stats/players', json=data)
+            response = client.post('/players', json=data)
             self.assertEqual(response.status_code, 201)
 
             # 验证数据是否在测试会话中成功创建
@@ -182,7 +187,7 @@ class TestNBAStatsAPI(unittest.TestCase):
                 'rebounds': 8,
                 'assists': 3
             }
-            response = client.put('/nba_stats/players/1', json=data)
+            response = client.put('/players/1', json=data)
             self.assertEqual(response.status_code, 200)
 
             # 验证数据在测试会话中是否成功更新
@@ -200,7 +205,7 @@ class TestNBAStatsAPI(unittest.TestCase):
         self.session.commit()
 
         with app.test_client() as client:
-            response = client.delete('/nba_stats/players/1')
+            response = client.delete('/players/1')
             self.assertEqual(response.status_code, 200)
 
             # 验证球员在测试会话中是否已被删除

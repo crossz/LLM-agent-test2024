@@ -1,0 +1,20 @@
+# .gitignore for a Flask project
+
+# Ignore Python files
+*.pyc
+__pycache__/
+
+# Ignore virtual environment
+venv/
+.env/
+
+# Ignore Flask session files
+instance/
+.flaskenv
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore cache
+.cache/

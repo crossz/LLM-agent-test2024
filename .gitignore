@@ -18,3 +18,7 @@ logs/
 
 # Ignore cache
 .cache/
+
+
+# env
+# .env
